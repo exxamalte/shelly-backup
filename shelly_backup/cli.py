@@ -10,16 +10,14 @@ from .consts import APPLICATION_NAME
 
 def main():
     """Shelly Backup CLI tool."""
-    logging.basicConfig(
-        level=logging.INFO,
-    )
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     logger.info(
         "%s started (version %s)...",
         APPLICATION_NAME,
         importlib.metadata.version("shelly_backup"),
     )
-
+    # Command line parameters
     parser = argparse.ArgumentParser(description="Shelly Backup")
     parser.add_argument(
         "--ip-address",

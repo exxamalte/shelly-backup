@@ -61,7 +61,8 @@ class Backup:
             "actions": f"http://{self._ip_address}/settings/actions",
             "status": f"http://{self._ip_address}/status",
         }
-        self._configuration(urls)
+        configuration: dict = self._configuration(urls)
+        self._store(configuration)
 
     def _generation_2(self, basic_device_information: dict):
         """Backup generation 2 device."""
@@ -70,25 +71,28 @@ class Backup:
             "device_info": f"http://{self._ip_address}/rpc/Shelly.GetDeviceInfo",
             "status": f"http://{self._ip_address}/rpc/Shelly.GetStatus",
         }
-        self._configuration(urls)
+        configuration: dict = self._configuration(urls)
+        self._store(configuration)
 
-    def _configuration(self, urls: dict):
+    def _configuration(self, urls: dict) -> dict:
         """Fetch configuration from the provided list of URLs."""
+        result: dict = {}
         for information_type, url in urls.items():
             response = httpx.get(url)
             if response.status_code == httpx.codes.OK:
                 response_json = response.json()
-                self._store(information_type, response_json)
+                result[information_type] = response_json
             else:
                 _LOGGER.warning(
                     "Unable to get device settings from %s, response code %s",
                     url,
                     response.status_code,
                 )
+        return result
 
-    def _store(self, information_type: str, device_settings: dict):
+    def _store(self, device_settings: dict):
         """Store device settings."""
-        filename: str = f"shelly-{self._ip_address}-{information_type}.json"
+        filename: str = f"shelly-{self._ip_address}.json"
         filepath = self._target_folder.joinpath(filename)
         with open(filepath, "w") as file:
             json.dump(device_settings, file, indent=2)
