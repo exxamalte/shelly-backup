@@ -33,7 +33,7 @@ class Backup:
             response = httpx.get(url)
             if response.status_code == httpx.codes.OK:
                 response_json = response.json()
-                _LOGGER.info(response_json)
+                _LOGGER.debug(response_json)
                 # Check for 'gen' tag 2 (with 1 being the default)
                 shelly_gen = response_json.get("gen", 1)
                 _LOGGER.info("Device identified as generation %s", shelly_gen)
