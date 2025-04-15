@@ -18,7 +18,7 @@ def main():
         importlib.metadata.version("shelly_backup"),
     )
     # Command line parameters
-    parser = argparse.ArgumentParser(description="Shelly Backup")
+    parser = argparse.ArgumentParser(description=APPLICATION_NAME)
     parser.add_argument(
         "--ip-address",
         dest="ip_address",
