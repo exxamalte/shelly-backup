@@ -4,6 +4,8 @@ import argparse
 import importlib.metadata
 import logging
 
+from shelly_backup.configuration import Configuration
+
 from .backup import Backup
 from .consts import APPLICATION_NAME
 
@@ -22,7 +24,7 @@ def main():
     parser.add_argument(
         "--ip-address",
         dest="ip_address",
-        required=True,
+        required=False,
         help="IP address of the Shelly device",
     )
     parser.add_argument(
@@ -31,10 +33,20 @@ def main():
         required=False,
         help="Target folder where configuration will be stored",
     )
+    parser.add_argument(
+        "--configuration",
+        dest="configuration_file",
+        required=False,
+        help="Configuration file",
+    )
     args = parser.parse_args()
     try:
+        # Set up configuration
+        configuration = Configuration(
+            args.ip_address, args.target, args.configuration_file
+        )
         # Execute backup
-        backup = Backup(args.ip_address, args.target)
+        backup = Backup(configuration)
         backup.execute()
     except OSError as e:
         logger.error("Unable to create device backup: %s", e)
