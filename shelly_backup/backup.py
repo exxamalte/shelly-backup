@@ -39,13 +39,13 @@ class Backup:
             if response.status_code == httpx.codes.OK:
                 response_json = response.json()
                 _LOGGER.debug(response_json)
-                # Check for 'gen' tag 2 (with 1 being the default)
+                # Check for 'gen' tag 2 or 3 (with 1 being the default)
                 shelly_gen = response_json.get("gen", 1)
                 _LOGGER.info("Device identified as generation %s", shelly_gen)
                 match shelly_gen:
                     case 1:
                         self._generation_1(ip_address, response_json)
-                    case 2:
+                    case 2 | 3:
                         self._generation_2(ip_address, response_json)
                     case _:
                         # Unknown generation.
