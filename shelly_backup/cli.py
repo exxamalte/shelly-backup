@@ -28,8 +28,8 @@ def main():
         help="IP address of the Shelly device",
     )
     parser.add_argument(
-        "--target",
-        dest="target",
+        "--target-folder",
+        dest="target_folder",
         required=False,
         help="Target folder where configuration will be stored",
     )
@@ -43,7 +43,7 @@ def main():
     try:
         # Set up configuration
         configuration = Configuration(
-            args.ip_address, args.target, args.configuration_file
+            args.ip_address, args.target_folder, args.configuration_file
         )
         # Execute backup
         backup = Backup(configuration)

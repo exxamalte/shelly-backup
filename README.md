@@ -19,9 +19,9 @@ The file will be stored in the current folder.
 python -m shelly_backup.cli --ip-address 192.168.10.20
 ```
 
-You can use the `target` option to store the file into a specific folder.
+You can use the `target_folder` option to store the file into a specific folder.
 ```commandline
-python -m shelly_backup.cli --ip-address 192.168.10.20 --target backup_folder
+python -m shelly_backup.cli --ip-address 192.168.10.20 --target-folder backup_folder
 ```
 
 ## Configuration file
