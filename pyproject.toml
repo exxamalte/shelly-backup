@@ -39,9 +39,9 @@ tests = [
 ]
 
 [project.urls]
-Repository = "https://github.com/exxamalte/TBD"
-Issues = "https://github.com/exxamalte/TBD/issues"
-Changelog = "https://github.com/exxamalte/TBD/blob/master/CHANGELOG.md"
+Repository = "https://github.com/exxamalte/shelly-backup"
+Issues = "https://github.com/exxamalte/shelly-backup/issues"
+Changelog = "https://github.com/exxamalte/shelly-backup/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["shelly_backup*"]
