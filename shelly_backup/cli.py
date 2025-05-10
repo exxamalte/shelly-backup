@@ -4,10 +4,10 @@ import argparse
 import importlib.metadata
 import logging
 
+# Must use absolute imports in this file.
+from shelly_backup.backup import Backup
 from shelly_backup.configuration import Configuration
-
-from .backup import Backup
-from .consts import APPLICATION_NAME
+from shelly_backup.consts import APPLICATION_NAME
 
 
 def main():
