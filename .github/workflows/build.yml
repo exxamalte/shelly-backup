@@ -41,7 +41,7 @@ jobs:
             CMD_BUILD: >
                 pyinstaller cli.spec &&
                 cd dist/ &&
-                zip -r9 shellybackup shellybackup/
+                zip -r9 shellybackup shellybackup
             OUT_FILE_NAME: shellybackup.zip
             ASSET_MIME: application/zip
           - os: ubuntu-24.04-arm
@@ -51,7 +51,7 @@ jobs:
             CMD_BUILD: >
                 pyinstaller cli.spec &&
                 cd dist/ &&
-                zip -r9 shellybackup shellybackup/
+                zip -r9 shellybackup shellybackup
             OUT_FILE_NAME: shellybackup.zip
             ASSET_MIME: application/zip
     steps:
