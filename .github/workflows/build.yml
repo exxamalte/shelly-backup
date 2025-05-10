@@ -41,9 +41,9 @@ jobs:
             CMD_BUILD: >
                 pyinstaller cli.spec &&
                 cd dist/ &&
-                zip -r9 shellybackup shellybackup
-            OUT_FILE_NAME: shellybackup.zip
-            ASSET_MIME: application/zip
+                tar cfz shellybackup.tar.gz shellybackup
+            OUT_FILE_NAME: shellybackup.tar.gz
+            ASSET_MIME: application/gzip
           - os: ubuntu-24.04-arm
             TARGET: linux
             ARCH: arm64
@@ -51,9 +51,9 @@ jobs:
             CMD_BUILD: >
                 pyinstaller cli.spec &&
                 cd dist/ &&
-                zip -r9 shellybackup shellybackup
-            OUT_FILE_NAME: shellybackup.zip
-            ASSET_MIME: application/zip
+                tar cfz shellybackup.tar.gz shellybackup
+            OUT_FILE_NAME: shellybackup.tar.gz
+            ASSET_MIME: application/gzip
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -82,5 +82,5 @@ jobs:
       with:
         upload_url: ${{ needs.createrelease.outputs.release_url }}
         asset_path: ./dist/${{ matrix.OUT_FILE_NAME}}
-        asset_name: shellybackup-${{steps.version.outputs.version_number}}-${{ matrix.TARGET }}-${{ matrix.ARCH }}.zip
+        asset_name: shellybackup-${{steps.version.outputs.version_number}}-${{ matrix.TARGET }}-${{ matrix.ARCH }}.tar.gz
         asset_content_type: ${{ matrix.ASSET_MIME}}
