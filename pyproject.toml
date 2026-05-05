@@ -25,7 +25,7 @@ classifiers = [
 dependencies = [
     "httpx",
     "PyYAML>=6.0.3",
-    "pyinstaller>=6.19.0",
+    "pyinstaller>=6.20.0",
 ]
 
 [project.optional-dependencies]
