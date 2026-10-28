@@ -11,6 +11,7 @@ device is not supported.
 * Fetches device configuration:
   * Gen 1: Settings, actions and status
   * Gen 2 and Gen 3: Configuration, device info and status
+* Auto-discovery of Shelly devices via mDNS (`--discover`).
 * No support for authenticated access to devices.
 * No restore capability.
 
@@ -27,9 +28,17 @@ You can use the `target_folder` option to store the database into a specific fol
 python -m shelly_backup.cli --ip-address 192.168.10.20 --target-folder backup_folder
 ```
 
+## Auto-discovery
+
+You can automatically discover Shelly devices on the network via mDNS:
+
+```commandline
+python -m shelly_backup.cli --discover
+```
+
 ## Configuration file
 
-You can create a YAML configuration file to specify multiple IP addresses of Shelly devices.
+You can create a YAML configuration file to specify multiple IP addresses of Shelly devices or enable discovery.
 
 ```yaml
 ip_addresses:
@@ -38,6 +47,11 @@ ip_addresses:
   - 192.168.10.23
   - 192.168.10.24
 
+target_folder: backup_folder
+```
+
+```yaml
+discover: true
 target_folder: backup_folder
 ```
 

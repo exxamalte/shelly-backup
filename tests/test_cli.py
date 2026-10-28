@@ -19,6 +19,7 @@ class TestCLI:
         mock_args.ip_address = "192.168.1.1"
         mock_args.target_folder = None
         mock_args.configuration_file = None
+        mock_args.discover = False
         mock_parse_args.return_value = mock_args
 
         mock_config_instance = Mock()
@@ -28,7 +29,7 @@ class TestCLI:
 
         cli.main()
 
-        mock_configuration.assert_called_once_with("192.168.1.1", None, None)
+        mock_configuration.assert_called_once_with("192.168.1.1", None, None, False)
         mock_backup.assert_called_once_with(mock_config_instance)
         mock_backup_instance.execute.assert_called_once()
 
@@ -43,6 +44,7 @@ class TestCLI:
         mock_args.ip_address = None
         mock_args.target_folder = None
         mock_args.configuration_file = "config.yaml"
+        mock_args.discover = False
         mock_parse_args.return_value = mock_args
 
         mock_config_instance = Mock()
@@ -52,7 +54,7 @@ class TestCLI:
 
         cli.main()
 
-        mock_configuration.assert_called_once_with(None, None, "config.yaml")
+        mock_configuration.assert_called_once_with(None, None, "config.yaml", False)
         mock_backup_instance.execute.assert_called_once()
 
     @patch("shelly_backup.cli.Backup")
@@ -66,6 +68,7 @@ class TestCLI:
         mock_args.ip_address = "192.168.1.1"
         mock_args.target_folder = None
         mock_args.configuration_file = None
+        mock_args.discover = False
         mock_parse_args.return_value = mock_args
 
         mock_configuration.side_effect = OSError("Permission denied")

@@ -11,14 +11,22 @@ class Configuration:
     _configuration: dict | None = None
     _ip_address: str | None = None
     _target_folder: str | None = None
+    _discover: bool = False
 
-    def __init__(self, ip_address: str, target_folder: str, configuration_file: str):
+    def __init__(
+        self,
+        ip_address: str | None = None,
+        target_folder: str | None = None,
+        configuration_file: str | None = None,
+        discover: bool = False,
+    ):
         """Initialise backup."""
         if configuration_file:
             with open(configuration_file) as f:
                 self._configuration = yaml.load(f, Loader=yaml.FullLoader)
         self._ip_address = ip_address
         self._target_folder = target_folder
+        self._discover = discover
 
     def ip_addresses(self) -> list[str] | None:
         """Get IP addresses from configuration."""
@@ -39,4 +47,11 @@ class Configuration:
             # Create folder structure if it doesn't exist.
             Path(target_folder).mkdir(parents=True, exist_ok=True)
             return Path(target_folder)
+        Path.cwd().mkdir(parents=True, exist_ok=True)
         return Path.cwd()
+
+    def discover(self) -> bool:
+        """Whether to discover devices via mDNS."""
+        if self._configuration and "discover" in self._configuration:
+            return bool(self._configuration["discover"])
+        return bool(self._discover)
