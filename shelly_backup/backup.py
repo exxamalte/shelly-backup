@@ -1,9 +1,10 @@
 """Shelly Backup."""
 
-import json
+from datetime import UTC, datetime
 import logging
 
 import httpx
+from tinydb import TinyDB
 
 from .configuration import Configuration
 
@@ -97,8 +98,16 @@ class Backup:
 
     def _store(self, ip_address: str, device_settings: dict):
         """Store device settings."""
-        filename: str = f"shelly-{ip_address}.json"
-        filepath = self._configuration.target_folder().joinpath(filename)
-        with open(filepath, "w") as file:
-            json.dump(device_settings, file, indent=2)
-            _LOGGER.info("Configuration stored: %s", filepath)
+        target_folder = self._configuration.target_folder()
+        target_folder.mkdir(parents=True, exist_ok=True)
+        db_path = target_folder / "shelly_backup.json"
+        db = TinyDB(db_path)
+        db.insert(
+            {
+                "ip_address": ip_address,
+                "timestamp": datetime.now(UTC).isoformat(),
+                "settings": device_settings,
+            }
+        )
+        db.close()
+        _LOGGER.info("Configuration stored: %s", db_path)
