@@ -1,7 +1,7 @@
 """Tests for backup module."""
 
 import tempfile
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import Mock, patch
 
 import httpx
 
@@ -216,16 +216,22 @@ class TestBackup:
             }
             assert mock_get.call_count == 3
 
-    def test_store(self):
+    @patch("shelly_backup.backup.TinyDB")
+    def test_store(self, mock_tinydb):
         """Test storing device configuration."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config = Configuration(None, tmpdir, None)
             backup = Backup(config)
 
+            mock_db = mock_tinydb.return_value
             device_settings = {"settings": {"test": "value"}}
-            with patch("builtins.open", mock_open()) as mock_file:
-                backup._store("192.168.1.1", device_settings)  # noqa: SLF001
-                mock_file.assert_called_once()
-                call_args = mock_file.call_args[0]
-                assert str(call_args[0]).endswith("shelly-192.168.1.1.json")
-                assert call_args[1] == "w"
+            backup._store("192.168.1.1", device_settings)  # noqa: SLF001
+            mock_tinydb.assert_called_once()
+            call_args = mock_tinydb.call_args[0][0]
+            assert str(call_args).endswith("shelly_backup.json")
+            mock_db.insert.assert_called_once()
+            insert_args = mock_db.insert.call_args[0][0]
+            assert insert_args["ip_address"] == "192.168.1.1"
+            assert "timestamp" in insert_args
+            assert insert_args["settings"] == device_settings
+            mock_db.close.assert_called_once()
