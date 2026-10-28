@@ -1,5 +1,6 @@
 """mDNS discovery for Shelly devices."""
 
+import contextlib
 import logging
 import time
 
@@ -31,7 +32,7 @@ class ShellyServiceListener(ServiceListener):
 
     def _get_addresses(self, zc: Zeroconf, type_: str, name: str) -> None:
         """Get IP addresses for a service."""
-        info = zc.get_service_info(type_, name, timeout=3000)
+        info = zc.get_service_info(type_, name, timeout=5000)
         if info:
             addresses = info.parsed_addresses()
             for address in addresses:
@@ -40,37 +41,45 @@ class ShellyServiceListener(ServiceListener):
                     _LOGGER.info("Discovered Shelly device at %s", address)
 
 
-def discover_shelly_devices(timeout: float = 30.0) -> list[str]:
+def _collect_from_browser(zeroconf, browser, devices_set, devices_ordered):
+    try:
+        services = getattr(browser, "services", None)
+        if not services:
+            return
+        for service_name in list(services.keys()):
+            with contextlib.suppress(OSError, RuntimeError):
+                info = zeroconf.get_service_info(
+                    SHELLY_MDNS_SERVICE_TYPE, service_name, timeout=3000
+                )
+                if info:
+                    for addr in info.parsed_addresses():
+                        if addr and addr not in devices_set:
+                            devices_set.add(addr)
+                            devices_ordered.append(addr)
+                            _LOGGER.info("Discovered Shelly device at %s", addr)
+    except OSError, RuntimeError:
+        pass
+
+
+def discover_shelly_devices(timeout: float = 60.0) -> list[str]:
     """Discover Shelly devices on the network via mDNS."""
+    devices_set: set[str] = set()
+    devices_ordered: list[str] = []
+
     zeroconf = Zeroconf()
     listener = ShellyServiceListener(zeroconf)
     browser = ServiceBrowser(zeroconf, SHELLY_MDNS_SERVICE_TYPE, listener)
     try:
-        time.sleep(timeout)
-        # Also try to request info for any services found
-        try:
-            services = getattr(browser, "services", {}) or {}
-            for service in list(services.keys()):
-                try:
-                    info = zeroconf.get_service_info(
-                        SHELLY_MDNS_SERVICE_TYPE, service, timeout=2000
-                    )
-                    if info:
-                        for address in info.parsed_addresses():
-                            if address and address not in listener.devices:
-                                listener.devices.append(address)
-                                _LOGGER.info("Discovered Shelly device at %s", address)
-                except OSError, RuntimeError:
-                    pass
-        except OSError, RuntimeError:
-            pass
+        for _ in range(int(timeout)):
+            time.sleep(1)
+            for addr in listener.devices:
+                if addr and addr not in devices_set:
+                    devices_set.add(addr)
+                    devices_ordered.append(addr)
+                    _LOGGER.info("Discovered Shelly device at %s", addr)
+            _collect_from_browser(zeroconf, browser, devices_set, devices_ordered)
     finally:
-        zeroconf.close()
-    # Remove duplicates while preserving order
-    devices = []
-    seen = set()
-    for device in listener.devices:
-        if device not in seen:
-            devices.append(device)
-            seen.add(device)
-    return devices
+        with contextlib.suppress(OSError, RuntimeError):
+            zeroconf.close()
+
+    return devices_ordered
