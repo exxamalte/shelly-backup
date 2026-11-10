@@ -7,6 +7,7 @@ import httpx
 from tinydb import TinyDB
 
 from .configuration import Configuration
+from .discovery import discover_shelly_devices
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +24,9 @@ class Backup:
     def execute(self):
         """Run device backup."""
         ip_addresses = self._configuration.ip_addresses()
+        if not ip_addresses and self._configuration.discover():
+            _LOGGER.info("Discovering Shelly devices via mDNS...")
+            ip_addresses = discover_shelly_devices()
         if not ip_addresses:
             _LOGGER.warning(
                 "No IP addresses of Shelly devices specified. Unable to continue."

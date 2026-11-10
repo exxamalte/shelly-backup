@@ -39,11 +39,21 @@ def main():
         required=False,
         help="Configuration file",
     )
+    parser.add_argument(
+        "--discover",
+        dest="discover",
+        action="store_true",
+        required=False,
+        help="Auto-discover Shelly devices via mDNS",
+    )
     args = parser.parse_args()
     try:
         # Set up configuration
         configuration = Configuration(
-            args.ip_address, args.target_folder, args.configuration_file
+            args.ip_address,
+            args.target_folder,
+            args.configuration_file,
+            args.discover,
         )
         # Execute backup
         backup = Backup(configuration)
